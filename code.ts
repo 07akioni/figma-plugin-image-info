@@ -7,7 +7,6 @@ async function getImageInfo (bytes: Uint8Array) {
 }
 
 async function printImageInfo (node) {
-  const newFills = []
   for (const paint of node.fills) {
     if (paint.type === 'IMAGE') {
       const image = figma.getImageByHash(paint.imageHash)
