@@ -1,6 +1,65 @@
 
+<input id="image-width-input" placeholder="Image Width" value="256">
+<input id="gutter-input" placeholder="Gutter" value="16">
+<button id="confirm-button" disabled>Collecting Image Info</button>
+
 <script>
 
+const imageWidthInput = document.getElementById('image-width-input')
+const gutterInput = document.getElementById('gutter-input')
+const confimButton = document.getElementById('confirm-button')
+
+let widthLiteral = '256'
+let gutterLiteral = '16'
+
+imageWidthInput.addEventListener('input', e => {
+  widthLiteral = e.target.value
+})
+gutterInput.addEventListener('input', e => {
+  gutterLiteral = e.target.value
+})
+
+confimButton.addEventListener('click', () => {
+  if (
+    /^\d+$/.test(widthLiteral) &&
+    /^\d+$/.test(gutterLiteral)
+  ) {
+    const width = Number(widthLiteral)
+    const gutter = Number(gutterLiteral)
+    if (width > 0) {
+      window.parent.postMessage({
+        pluginMessage: {
+          type: 'set-width',
+          data: {
+            width,
+            gutter
+          }
+        }
+      }, '*')
+    }
+  } else {
+    console.error('invalid width or gutter')
+  }
+})
+
+window.onmessage = async (event) => {
+  const message = event.data.pluginMessage
+  switch (message.type) {
+    case 'get-image-size':
+      window.parent.postMessage({
+        pluginMessage: {
+          type: 'get-image-size',
+          data: await decode(message.data)
+        }
+      }, '*')
+      break
+    case 'data-ready':
+      confimButton.disabled = false
+      confimButton.innerText = 'Create Waterfall'
+  }
+}
+
+// utils
 async function decode(bytes) {
   const url = URL.createObjectURL(new Blob([bytes]))
   const image = await new Promise((resolve, reject) => {
@@ -13,11 +72,6 @@ async function decode(bytes) {
     width: image.width,
     height: image.height
   }
-}
-
-window.onmessage = async (event) => {
-  const bytes = event.data.pluginMessage
-  window.parent.postMessage({ pluginMessage: await decode(bytes) }, '*')
 }
 
 </script>
