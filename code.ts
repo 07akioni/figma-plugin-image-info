@@ -1,6 +1,6 @@
 async function getImageInfo (bytes: Uint8Array) {
   figma.ui.postMessage(bytes)
-  const imageInfo = await new Promise((resolve, reject) => {
+  const imageInfo = await new Promise(resolve => {
     figma.ui.onmessage = value => resolve(value)
   })
   return imageInfo
