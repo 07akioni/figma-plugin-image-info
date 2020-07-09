@@ -1,0 +1,23 @@
+
+<script>
+
+async function decode(bytes) {
+  const url = URL.createObjectURL(new Blob([bytes]))
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = () => reject()
+    img.src = url
+  })
+  return {
+    width: image.width,
+    height: image.height
+  }
+}
+
+window.onmessage = async (event) => {
+  const bytes = event.data.pluginMessage
+  window.parent.postMessage({ pluginMessage: await decode(bytes) }, '*')
+}
+
+</script>

@@ -1,0 +1,7 @@
+{
+  "name": "figma-ui-plugin-test",
+  "id": "863061440084977588",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html"
+}
